@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NOVA — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #07080f;
+  --surface:  #0f1018;
+  --surface2: #161824;
+  --border:   #1f2133;
+  --border2:  #2c2f4a;
+  --accent:   #6c63ff;
+  --accent2:  #ff63d4;
+  --accent3:  #63ffe4;
+  --text:     #e6e8f5;
+  --muted:    #4e5068;
+  --error:    #ff5c5c;
+  --success:  #63ffe4;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 10% 0%,   #6c63ff0f 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 90% 100%,  #ff63d409 0%, transparent 70%);
+}
+
+/* ── CARD ── */
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 36px 36px;
+  animation: cardIn .45s cubic-bezier(.22,.68,0,1.1) both;
+  position: relative;
+  overflow: hidden;
+}
+
+/* subtle top-edge glow line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent)66, transparent);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(18px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── LOGO ── */
+.logo-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 28px;
+  animation: fadeUp .4s .05s ease both;
+}
+.logo-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 20px #6c63ff30;
+}
+.logo-name {
+  font-size: 1.3rem; font-weight: 800; letter-spacing: .07em;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.logo-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: .55rem; color: var(--muted);
+  margin-top: 1px; letter-spacing: .08em;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex; gap: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 4px;
+  margin-bottom: 28px;
+  animation: fadeUp .4s .1s ease both;
+}
+.tab {
+  flex: 1; padding: 9px;
+  border-radius: 9px; border: none;
+  background: transparent;
+  font-family: 'Syne', sans-serif;
+  font-size: .8rem; font-weight: 700;
+  color: var(--muted); cursor: pointer;
+  transition: all .22s;
+}
+.tab.active {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  box-shadow: 0 2px 8px #00000044;
+}
+
+/* ── FORM PANELS ── */
+.panel { display: none; }
+.panel.active {
+  display: flex; flex-direction: column; gap: 16px;
+  animation: fadeUp .3s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── FIELD ── */
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field label {
+  font-family: 'Space Mono', monospace;
+  font-size: .62rem; color: var(--muted);
+  letter-spacing: .06em; text-transform: uppercase;
+}
+
+.input-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.input-wrap .fi {
+  position: absolute; left: 13px;
+  font-size: 14px; color: var(--muted);
+  pointer-events: none;
+  transition: color .2s;
+}
+.input-wrap input {
+  width: 100%;
+  padding: 11px 12px 11px 38px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: .88rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #6c63ff18;
+}
+.input-wrap input:focus ~ .fi,
+.input-wrap input:focus + .fi { color: var(--accent); }
+
+/* fix icon order for the sibling selector */
+.input-wrap .fi { order: -1; }
+.input-wrap input { order: 0; }
+
+/* toggle password */
+.eye-btn {
+  position: absolute; right: 12px;
+  background: none; border: none;
+  color: var(--muted); cursor: pointer;
+  font-size: 15px; padding: 2px;
+  transition: color .2s;
+}
+.eye-btn:hover { color: var(--text); }
+
+/* field error */
+.field-err {
+  font-family: 'Space Mono', monospace;
+  font-size: .6rem; color: var(--error);
+  display: none; padding-left: 2px;
+}
+.field.has-error .input-wrap input { border-color: var(--error); }
+.field.has-error .field-err { display: block; }
+.field.is-valid  .input-wrap input { border-color: #63ffe455; }
+
+/* ── PASSWORD STRENGTH ── */
+.strength-bar {
+  height: 3px; border-radius: 3px;
+  background: var(--border);
+  overflow: hidden; margin-top: 4px;
+  display: none;
+}
+.strength-bar .fill {
+  height: 100%; border-radius: 3px;
+  width: 0; transition: width .3s, background .3s;
+}
+.strength-label {
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem; color: var(--muted);
+  text-align: right; display: none;
+}
+
+/* ── FORGOT ── */
+.forgot {
+  font-family: 'Space Mono', monospace;
+  font-size: .62rem; color: var(--muted);
+  text-align: right; cursor: pointer;
+  transition: color .18s; text-decoration: none;
+  display: block; margin-top: -6px;
+}
+.forgot:hover { color: var(--accent); }
+
+/* ── SUBMIT BTN ── */
+.submit-btn {
+  width: 100%; padding: 13px;
+  border-radius: 12px; border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: .92rem; font-weight: 800;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .2s, opacity .2s;
+  position: relative; overflow: hidden;
+}
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px #6c63ff44;
+}
+.submit-btn:active { transform: translateY(0) scale(.98); }
+.submit-btn.loading { opacity: .7; pointer-events: none; }
+
+/* spinner inside btn */
+.btn-spinner {
+  display: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid #ffffff55;
+  border-top-color: #fff;
+  animation: spin .7s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.submit-btn.loading .btn-text { display: none; }
+.submit-btn.loading .btn-spinner { display: block; }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 10px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.divider span {
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem; color: var(--muted);
+}
+
+/* ── GOOGLE BTN ── */
+.google-btn {
+  width: 100%; padding: 11px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: .84rem; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: border-color .2s, background .2s;
+}
+.google-btn:hover { border-color: var(--accent); background: #6c63ff0a; }
+.g-icon { font-size: 17px; }
+
+/* ── TERMS ── */
+.terms {
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem; color: var(--muted);
+  text-align: center; line-height: 1.7;
+}
+.terms a { color: var(--accent); text-decoration: none; }
+.terms a:hover { text-decoration: underline; }
+
+/* ── SUCCESS TOAST ── */
+#toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--surface2);
+  border: 1px solid var(--accent3);
+  color: var(--accent3);
+  font-family: 'Space Mono', monospace;
+  font-size: .72rem; padding: 10px 20px;
+  border-radius: 30px;
+  box-shadow: 0 0 20px #63ffe422;
+  opacity: 0; transition: opacity .3s, transform .3s;
+  pointer-events: none; white-space: nowrap;
+  z-index: 999;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* online dot */
+.online-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent3);
+  display: inline-block;
+  animation: blink 1.4s ease-in-out infinite;
+  margin-right: 4px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* ── GOOGLE MODAL ── */
+#googleModal {
+  display: none;
+  position: fixed; inset: 0;
+  background: #00000088;
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+#googleModal.open { display: flex; }
+.g-modal-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  width: min(360px, 90vw);
+  animation: cardIn .3s cubic-bezier(.22,.68,0,1.1) both;
+  position: relative;
+}
+.g-modal-card h3 {
+  font-size: 1rem; font-weight: 800;
+  margin-bottom: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.g-modal-card p {
+  font-family: 'Space Mono', monospace;
+  font-size: .6rem; color: var(--muted);
+  margin-bottom: 20px;
+}
+.g-accounts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.g-account-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.g-account-row:hover { border-color: var(--accent); background: #6c63ff0a; }
+.g-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.g-account-info { text-align: left; }
+.g-account-name { font-size: .85rem; font-weight: 700; color: var(--text); }
+.g-account-email { font-family: 'Space Mono', monospace; font-size: .58rem; color: var(--muted); }
+.g-divider { font-family:'Space Mono',monospace; font-size:.58rem; color:var(--muted); text-align:center; margin: 4px 0 12px; }
+.g-new-field {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.g-new-field input {
+  width: 100%;
+  padding: 10px 13px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: .85rem;
+  outline: none;
+  transition: border-color .2s;
+}
+.g-new-field input:focus { border-color: var(--accent); }
+.g-new-field input::placeholder { color: var(--muted); }
+.g-close {
+  position: absolute; top: 14px; right: 16px;
+  background: none; border: none; color: var(--muted);
+  font-size: 18px; cursor: pointer;
+  transition: color .2s;
+}
+.g-close:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo-row">
+    <div class="logo-icon">🤖</div>
+    <div>
+      <div class="logo-name">NOVA</div>
+      <div class="logo-sub"><span class="online-dot"></span>Neural Optimized Virtual Assistant</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tabLogin"    onclick="switchTab('login')">Sign In</button>
+    <button class="tab"        id="tabRegister" onclick="switchTab('register')">Create Account</button>
+  </div>
+
+  <!-- ── LOGIN PANEL ── -->
+  <div class="panel active" id="panelLogin">
+
+    <div class="field" id="fLoginEmail">
+      <label>Email</label>
+      <div class="input-wrap">
+        <span class="fi">✉️</span>
+        <input type="email" id="loginEmail" placeholder="you@example.com"
+               oninput="clearErr('fLoginEmail')"/>
+      </div>
+      <span class="field-err">Please enter a valid email.</span>
+    </div>
+
+    <div class="field" id="fLoginPass">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="fi">🔒</span>
+        <input type="password" id="loginPass" placeholder="••••••••"
+               oninput="clearErr('fLoginPass')"/>
+        <button class="eye-btn" onclick="togglePwd('loginPass', this)" tabindex="-1">👁</button>
+      </div>
+      <span class="field-err">Password is required.</span>
+    </div>
+
+    <a class="forgot" onclick="showToast('📧 Password reset link sent!')">Forgot password?</a>
+
+    <button class="submit-btn" id="loginBtn" onclick="handleLogin()">
+      <span class="btn-text">Sign In →</span>
+      <div class="btn-spinner"></div>
+    </button>
+
+    <div class="divider"><span>or continue with</span></div>
+
+    <button class="google-btn" id="googleBtn" onclick="handleGoogleLogin()">
+      <span class="g-icon">🌐</span> Continue with Google
+    </button>
+
+  </div>
+
+  <!-- ── REGISTER PANEL ── -->
+  <div class="panel" id="panelRegister">
+
+    <div class="field" id="fRegName">
+      <label>Full Name</label>
+      <div class="input-wrap">
+        <span class="fi">🧑</span>
+        <input type="text" id="regName" placeholder="Srujan Mb"
+               oninput="clearErr('fRegName')"/>
+      </div>
+      <span class="field-err">Name must be at least 2 characters.</span>
+    </div>
+
+    <div class="field" id="fRegEmail">
+      <label>Email</label>
+      <div class="input-wrap">
+        <span class="fi">✉️</span>
+        <input type="email" id="regEmail" placeholder="you@example.com"
+               oninput="clearErr('fRegEmail')"/>
+      </div>
+      <span class="field-err">Please enter a valid email.</span>
+    </div>
+
+    <div class="field" id="fRegPass">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="fi">🔒</span>
+        <input type="password" id="regPass" placeholder="Min. 8 characters"
+               oninput="checkStrength(this.value); clearErr('fRegPass')"/>
+        <button class="eye-btn" onclick="togglePwd('regPass', this)" tabindex="-1">👁</button>
+      </div>
+      <div class="strength-bar" id="strengthBar"><div class="fill" id="strengthFill"></div></div>
+      <div class="strength-label" id="strengthLabel"></div>
+      <span class="field-err">Password must be at least 8 characters.</span>
+    </div>
+
+    <div class="field" id="fRegConfirm">
+      <label>Confirm Password</label>
+      <div class="input-wrap">
+        <span class="fi">🔒</span>
+        <input type="password" id="regConfirm" placeholder="Repeat password"
+               oninput="clearErr('fRegConfirm')"/>
+        <button class="eye-btn" onclick="togglePwd('regConfirm', this)" tabindex="-1">👁</button>
+      </div>
+      <span class="field-err">Passwords do not match.</span>
+    </div>
+
+    <button class="submit-btn" id="registerBtn" onclick="handleRegister()">
+      <span class="btn-text">Create Account →</span>
+      <div class="btn-spinner"></div>
+    </button>
+
+    <p class="terms">
+      By signing up you agree to our <a href="#">Terms of Service</a>
+      and <a href="#">Privacy Policy</a>.
+    </p>
+
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Google Sign-In Modal -->
+<div id="googleModal">
+  <div class="g-modal-card">
+    <button class="g-close" onclick="closeGoogleModal()">✕</button>
+    <h3>🌐 Sign in with Google</h3>
+    <p>Choose an existing account or enter your details below.</p>
+
+    <div class="g-accounts" id="gAccountsList"></div>
+
+    <div class="g-divider" id="gDividerText">— or sign in with a new account —</div>
+
+    <div class="g-new-field">
+      <input type="text"  id="gNewName"  placeholder="Full Name" />
+      <input type="email" id="gNewEmail" placeholder="Google Email" />
+      <button class="submit-btn" style="margin-top:4px" onclick="confirmGoogleLogin()">
+        <span class="btn-text">Continue →</span>
+        <div class="btn-spinner"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Tab Switch ───────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById("panelLogin").classList.toggle("active",    tab === "login");
+  document.getElementById("panelRegister").classList.toggle("active", tab === "register");
+  document.getElementById("tabLogin").classList.toggle("active",      tab === "login");
+  document.getElementById("tabRegister").classList.toggle("active",   tab === "register");
+}
+
+// ── Toggle Password Visibility ───────────────────────────────
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const show = inp.type === "password";
+  inp.type = show ? "text" : "password";
+  btn.textContent = show ? "🙈" : "👁";
+}
+
+// ── Field Validation Helpers ────────────────────────────────
+function setErr(fieldId, msg) {
+  const f = document.getElementById(fieldId);
+  f.classList.add("has-error");
+  if (msg) f.querySelector(".field-err").textContent = msg;
+}
+function clearErr(fieldId) {
+  document.getElementById(fieldId).classList.remove("has-error", "is-valid");
+}
+function setValid(fieldId) {
+  const f = document.getElementById(fieldId);
+  f.classList.remove("has-error");
+  f.classList.add("is-valid");
+}
+function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+// ── Password Strength ────────────────────────────────────────
+function checkStrength(pw) {
+  const bar   = document.getElementById("strengthBar");
+  const fill  = document.getElementById("strengthFill");
+  const label = document.getElementById("strengthLabel");
+
+  bar.style.display = pw.length ? "block" : "none";
+  label.style.display = pw.length ? "block" : "none";
+
+  let score = 0;
+  if (pw.length >= 8)              score++;
+  if (/[A-Z]/.test(pw))           score++;
+  if (/[0-9]/.test(pw))           score++;
+  if (/[^A-Za-z0-9]/.test(pw))   score++;
+
+  const levels = [
+    { w: "25%",  bg: "#ff5c5c", txt: "Weak" },
+    { w: "50%",  bg: "#ffaa00", txt: "Fair" },
+    { w: "75%",  bg: "#6c63ff", txt: "Good" },
+    { w: "100%", bg: "#63ffe4", txt: "Strong" },
+  ];
+  const lvl = levels[Math.max(0, score - 1)];
+  fill.style.width      = lvl.w;
+  fill.style.background = lvl.bg;
+  label.textContent     = lvl.txt;
+  label.style.color     = lvl.bg;
+}
+
+// ── Login ────────────────────────────────────────────────────
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass  = document.getElementById("loginPass").value;
+  let ok = true;
+
+  if (!isValidEmail(email)) { setErr("fLoginEmail"); ok = false; }
+  else setValid("fLoginEmail");
+
+  if (!pass) { setErr("fLoginPass"); ok = false; }
+  else setValid("fLoginPass");
+
+  if (!ok) return;
+
+  const btn = document.getElementById("loginBtn");
+  btn.classList.add("loading");
+
+  setTimeout(() => {
+    btn.classList.remove("loading");
+    // Simulate: check localStorage for registered user
+    const users = JSON.parse(localStorage.getItem("nova_users") || "[]");
+    const found = users.find(u => u.email === email && u.pass === pass);
+    if (found) {
+      localStorage.setItem("nova_current_user", JSON.stringify(found));
+      showToast("✅ Welcome back, " + found.name.split(" ")[0] + "! Redirecting…");
+      setTimeout(() => { window.location.href = "/chat-app"; }, 1400);
+    } else {
+      setErr("fLoginPass", "Incorrect email or password.");
+      showToast("❌ Login failed. Check your credentials.");
+    }
+  }, 1200);
+}
+
+// ── Register ─────────────────────────────────────────────────
+function handleRegister() {
+  const name    = document.getElementById("regName").value.trim();
+  const email   = document.getElementById("regEmail").value.trim();
+  const pass    = document.getElementById("regPass").value;
+  const confirm = document.getElementById("regConfirm").value;
+  let ok = true;
+
+  if (name.length < 2)      { setErr("fRegName",    "Name must be at least 2 characters."); ok = false; } else setValid("fRegName");
+  if (!isValidEmail(email)) { setErr("fRegEmail",   "Please enter a valid email.");          ok = false; } else setValid("fRegEmail");
+  if (pass.length < 8)      { setErr("fRegPass",    "Password must be at least 8 characters."); ok = false; } else setValid("fRegPass");
+  if (pass !== confirm)     { setErr("fRegConfirm", "Passwords do not match.");              ok = false; } else setValid("fRegConfirm");
+
+  if (!ok) return;
+
+  const btn = document.getElementById("registerBtn");
+  btn.classList.add("loading");
+
+  setTimeout(() => {
+    btn.classList.remove("loading");
+    // Save to localStorage
+    const users = JSON.parse(localStorage.getItem("nova_users") || "[]");
+    if (users.find(u => u.email === email)) {
+      setErr("fRegEmail", "This email is already registered.");
+      showToast("⚠️ Email already in use. Try signing in.");
+      return;
+    }
+    users.push({ name, email, pass });
+    localStorage.setItem("nova_users", JSON.stringify(users));
+    localStorage.setItem("nova_current_user", JSON.stringify({ name, email }));
+    showToast("🎉 Account created! Welcome, " + name.split(" ")[0] + "!");
+    setTimeout(() => { window.location.href = "/chat-app"; }, 1400);
+  }, 1200);
+}
+
+// ── Google Login ─────────────────────────────────────────────
+function handleGoogleLogin() {
+  const modal = document.getElementById("googleModal");
+  const list  = document.getElementById("gAccountsList");
+  const divider = document.getElementById("gDividerText");
+  list.innerHTML = "";
+
+  // Load previously registered accounts from localStorage
+  const users = JSON.parse(localStorage.getItem("nova_users") || "[]");
+  if (users.length > 0) {
+    divider.style.display = "block";
+    users.forEach(u => {
+      const row = document.createElement("div");
+      row.className = "g-account-row";
+      const initial = (u.name || u.email)[0].toUpperCase();
+      row.innerHTML = `
+        <div class="g-avatar">${initial}</div>
+        <div class="g-account-info">
+          <div class="g-account-name">${u.name || "User"}</div>
+          <div class="g-account-email">${u.email}</div>
+        </div>`;
+      row.onclick = () => googleSignInAs(u);
+      list.appendChild(row);
+    });
+  } else {
+    divider.style.display = "none";
+  }
+
+  // Clear new-account inputs
+  document.getElementById("gNewName").value  = "";
+  document.getElementById("gNewEmail").value = "";
+
+  modal.classList.add("open");
+}
+
+function closeGoogleModal() {
+  document.getElementById("googleModal").classList.remove("open");
+}
+
+function googleSignInAs(user) {
+  closeGoogleModal();
+  localStorage.setItem("nova_current_user", JSON.stringify(user));
+  showToast("✅ Signed in as " + (user.name || user.email).split(" ")[0] + "! Redirecting…");
+  setTimeout(() => { window.location.href = "/chat-app"; }, 1300);
+}
+
+function confirmGoogleLogin() {
+  const name  = document.getElementById("gNewName").value.trim();
+  const email = document.getElementById("gNewEmail").value.trim();
+
+  if (name.length < 2) {
+    document.getElementById("gNewName").style.borderColor = "var(--error)";
+    document.getElementById("gNewName").focus();
+    return;
+  }
+  if (!isValidEmail(email)) {
+    document.getElementById("gNewEmail").style.borderColor = "var(--error)";
+    document.getElementById("gNewEmail").focus();
+    return;
+  }
+
+  // Reset border colours
+  document.getElementById("gNewName").style.borderColor  = "";
+  document.getElementById("gNewEmail").style.borderColor = "";
+
+  // Save / update user in localStorage
+  const users = JSON.parse(localStorage.getItem("nova_users") || "[]");
+  const existing = users.find(u => u.email === email);
+  const user = existing || { name, email, pass: "" };
+  if (!existing) { users.push(user); localStorage.setItem("nova_users", JSON.stringify(users)); }
+
+  googleSignInAs(user);
+}
+
+// Close modal on backdrop click
+document.getElementById("googleModal").addEventListener("click", function(e) {
+  if (e.target === this) closeGoogleModal();
+});
+
+// ── Toast ────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+// ── Enter key support ────────────────────────────────────────
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  if (document.getElementById("panelLogin").classList.contains("active")) handleLogin();
+  else handleRegister();
+});
+</script>
+</body>
+</html>
