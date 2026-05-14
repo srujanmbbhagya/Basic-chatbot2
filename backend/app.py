@@ -208,4 +208,4 @@ def chat():
 
 if __name__ == "__main__":
     print("NOVA Voice Chatbot running at http://localhost:5000")
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
